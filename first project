@@ -1,0 +1,125 @@
+#automating a bot to pick up the first 5 products on sale from Shopee (first project)
+
+import pyautogui  
+import time
+import pyperclip 
+
+pyautogui.PAUSE = 1
+
+# Entrar na Shopee
+pyautogui.click(x=899, y=1051)  # Abrir Chrome
+time.sleep(5)
+pyautogui.click(x=-1083, y=301)  # Clicar na barra de pesquisa
+pyautogui.write("shopee")
+pyautogui.press("enter")
+time.sleep(2)
+pyautogui.click(x=-1128, y=575)  # Entrar na Shopee
+time.sleep(4)
+pyautogui.click(x=-735, y=381)  # Barra de pesquisa Shopee
+pyautogui.write("promocao")
+pyautogui.press("enter")
+time.sleep(2)
+
+# Função para coletar os links dos produtos
+def coletar_links_produtos():
+    produtos = []
+    time.sleep(2)
+    
+    # Coletar links de 5 produtos
+    for i in range(5):
+        # Clicar no produto (ajuste as coordenadas conforme a posição dos produtos)
+        pyautogui.click(x=-980 + i*200, y=847)  # Ajuste o valor de x (horizontal) para navegar pela fileira
+        time.sleep(3)  # Tempo para carregar a página do produto
+
+        # Copiar o link do produto
+        pyautogui.hotkey("ctrl", "l")  # Seleciona o URL na barra de endereços
+        pyautogui.hotkey("ctrl", "c")  # Copia o URL
+        time.sleep(3)
+        
+        # Voltar para a página anterior (promoções)
+        pyautogui.click(x=-1337, y=296)  # Clica no botão de voltar
+        time.sleep(3)  # Tempo para carregar a página de promoções novamente
+
+        # Pegar o link da área de transferência
+        link = pyperclip.paste()
+        produtos.append(link)
+    
+    return produtos
+
+# Função para inserir os links no Shopee Afiliados e salvar os links gerados
+def inserir_links_no_afiliados(produtos):
+    links_transformados = []  # Lista para armazenar os links de afiliado gerados
+
+    # Abrir DuckDuckGo e acessar Shopee Afiliados
+    pyautogui.hotkey("ctrl", "t")  # Abre uma nova guia
+    pyautogui.write("duckduckgo")  # Digita DuckDuckGo
+    pyautogui.press("enter")
+    time.sleep(3)
+    pyautogui.click(x=-905, y=540)  # Clica para entrar no DuckDuckGo
+    pyautogui.write("affiliate.shopee.com.br")  # Digita o link da Shopee Afiliados
+    pyautogui.press("enter")
+    time.sleep(3)
+    pyautogui.scroll(-500)
+    time.sleep(2)
+    pyautogui.click(x=-1109, y=397)  # Clica para entrar no Shopee Afiliados
+    time.sleep(7)
+    
+    # Clicar no local para mudar o link
+    pyautogui.click(x=-1274, y=648)  # Clica para colocar o link no campo
+
+    # Cole os links no Shopee Afiliados automaticamente
+    for produto in produtos:
+        print(produto)  # Log para verificar se o link está correto
+        pyautogui.click(x=-952, y=570) 
+        pyperclip.copy(produto)  # Copia o link do produto
+        pyautogui.click(x=-952, y=570)  # Clica novamente no campo onde o link será colado
+        time.sleep(1)
+        pyautogui.hotkey("ctrl", "v")  # Cola o link no campo
+        time.sleep(1)  # Aguarda um pouco para garantir que o link foi colado
+
+        # Scroll para baixo e clicar em "Obter Link"
+        pyautogui.scroll(-1000)  # Faz scroll para baixo
+        time.sleep(1)  # Espera um pouco
+        pyautogui.click(x=-1062, y=723)  # Clica em "Obter Link"
+        time.sleep(3)  # Tempo para gerar o link
+
+        # Clicar para copiar o link gerado
+        pyautogui.click(x=-493, y=782)  # Clica em "Copiar Link"
+        time.sleep(1)
+
+        # Pegar o link gerado e salvar na lista
+        link_transformado = pyperclip.paste()
+        
+        links_transformados.append(link_transformado)
+
+        # Clicar em um lugar aleatório para sair do "copiar link"
+        pyautogui.click(x=-252, y=521)
+        time.sleep(1)
+        pyautogui.scroll(1000)  # Dá um scroll para cima
+        time.sleep(1)
+        pyautogui.click(x=-952, y=570)  # Clica no lugar para adicionar outro link
+        pyautogui.hotkey("ctrl", "a")  # Seleciona link anterior
+        pyautogui.press("del")  # Exclui link anterior da caixa que transforma links 
+        time.sleep(2)
+
+    return links_transformados
+
+# Função principal
+def main():
+    # Coletar os links dos produtos
+    links = coletar_links_produtos()
+    
+    print("Links dos 5 primeiros produtos:")
+    for link in links:
+        print(link)
+    
+    # Inserir os links no Shopee Afiliados e gerar links de afiliado
+    links_afiliados = inserir_links_no_afiliados(links)
+
+    # Exibir os links de afiliado gerados
+    print("\nLinks de Afiliado Gerados:")
+    for link in links_afiliados:
+        print(link)
+
+main()
+
